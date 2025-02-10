@@ -1,9 +1,12 @@
 {
   "name": "event-tracker",
   "version": "1.0.0",
-  "description": "This is a **monorepo** for the **Event Tracker** project, containing both the **server-side (NestJS)** and **client-side (Vue.js)** applications in a single repository. The project provides an internal web tool for the Analytics team to define and track client events.",
+  "description": "This is a monorepo for the Event Tracker project.",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "concurrently \"npm:start:client\" \"npm:start:services\"",
+    "start:client": "cd client && npm run dev",
+    "start:services": "cd services && npm run start:dev"
   },
   "keywords": [],
   "author": "",
