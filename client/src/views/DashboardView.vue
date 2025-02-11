@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
+import EventsTable from '../components/EventsTable.vue';
 
 const drawer = ref(null)
 </script>
@@ -14,6 +15,6 @@ const drawer = ref(null)
       <v-app-bar-title>Event Tracker</v-app-bar-title>
     </v-app-bar>
 
-    <v-main> MAIN </v-main>
+    <v-main> <EventsTable/> </v-main>
   </v-app>
 </template>
