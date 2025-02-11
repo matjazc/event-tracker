@@ -15,6 +15,6 @@ const drawer = ref(null)
       <v-app-bar-title>Event Tracker</v-app-bar-title>
     </v-app-bar>
 
-    <v-main> <EventsTable/> </v-main>
+    <v-main> <EventsTable /> </v-main>
   </v-app>
 </template>
