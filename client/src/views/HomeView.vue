@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import TheWelcome from '../components/TheWelcome.vue';
+import { ref } from 'vue'
 
 const drawer = ref(null)
 </script>
 
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer">
-    </v-navigation-drawer>
+    <v-navigation-drawer v-model="drawer"> </v-navigation-drawer>
 
     <v-app-bar>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
@@ -16,8 +14,6 @@ const drawer = ref(null)
       <v-app-bar-title>Event Tracker</v-app-bar-title>
     </v-app-bar>
 
-    <v-main>
-      <TheWelcome />
-    </v-main>
+    <v-main> MAIN </v-main>
   </v-app>
 </template>
