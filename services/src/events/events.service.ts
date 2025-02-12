@@ -13,7 +13,11 @@ export class EventsService {
   }
 
   async findAll() {
-    return this.databaseService.event.findMany();
+    return this.databaseService.event.findMany({
+      orderBy: {
+        id: 'asc',
+      },
+    });
   }
 
   async update(id: number, updateEventDto: Prisma.EventUpdateInput) {
