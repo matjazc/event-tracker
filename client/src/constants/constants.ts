@@ -9,10 +9,10 @@ export const tableHeaders = [
   { title: 'Actions', key: 'actions', sortable: false },
 ]
 
-export const priorityArray: Number[] = [...Array(11)].map((_, index) => index)
-export const eventTypesArray: string[] = [
-  EventType.ADS,
+export const priorityList: Number[] = [...Array(11)].map((_, index) => index)
+export const eventTypesList: string[] = [
   EventType.APP,
   EventType.CROSSPROMO,
   EventType.LIVEOPS,
+  EventType.ADS,
 ]
