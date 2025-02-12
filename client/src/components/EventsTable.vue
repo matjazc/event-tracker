@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { eventTypesArray, priorityArray, tableHeaders } from '@/constants/constants'
+import { eventTypesList, priorityList, tableHeaders } from '@/constants/constants'
+import { useAuthStore } from '@/store/authStore'
 import { useEventsStore } from '@/store/eventsStore'
-import { EventType, type EventItem } from '@/types/types'
+import { EventType, Role, type EventItem } from '@/types/types'
 import { storeToRefs } from 'pinia'
 import { onMounted, reactive, ref, watch } from 'vue'
 
-const store = useEventsStore()
-const { events, isLoading } = storeToRefs(store)
-const { getEvents, addEvent, deleteEvent, updateEvent } = store
+const eventStore = useEventsStore()
+const { events, isLoading } = storeToRefs(eventStore)
+const { getEvents, addEvent, deleteEvent, updateEvent } = eventStore
+
+const authStore = useAuthStore()
+const { role } = storeToRefs(authStore)
 
 const isDialog = ref(false)
 const isDialogDelete = ref(false)
@@ -108,14 +112,14 @@ const saveEvent = () => {
                       <v-select
                         v-model="editedEvent.type"
                         label="Type"
-                        :items="eventTypesArray"
+                        :items="role === Role.ADMIN ? eventTypesList : eventTypesList.slice(0, -1)"
                       ></v-select>
                     </v-col>
                     <v-col cols="12" md="4" sm="6">
                       <v-select
                         v-model="editedEvent.priority"
                         label="Priority"
-                        :items="priorityArray"
+                        :items="priorityList"
                       ></v-select>
                     </v-col>
                   </v-row>
