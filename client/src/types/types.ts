@@ -1,5 +1,5 @@
-export interface Event {
-  id: number
+export interface EventItem {
+  id?: number
   name: string
   description: string
   type: EventType
@@ -7,8 +7,8 @@ export interface Event {
 }
 
 export enum EventType {
-  CROSSPROMO = 'crosspromo',
-  LIVEOPS = 'liveops',
-  APP = 'app',
-  ADS = 'ads',
+  CROSSPROMO = 'CROSSPROMO',
+  LIVEOPS = 'LIVEOPS',
+  APP = 'APP',
+  ADS = 'ADS',
 }
