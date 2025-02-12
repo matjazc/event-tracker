@@ -2,6 +2,7 @@ import { IPIFY_URL } from '@/constants/apiRoutes'
 import { Role } from '@/types/types'
 import axios from 'axios'
 import { defineStore } from 'pinia'
+import { toast } from 'vue3-toastify'
 
 interface State {
   token: string
@@ -23,7 +24,11 @@ export const useAuthStore = defineStore('auth', {
         const response = await axios.get(`${IPIFY_URL}`)
         this.token = response.data.ip
       } catch (error) {
-        return error
+        console.error(error)
+        toast.error('Authentication error. The least privileged user rights have been applied.', {
+          position: 'top-center',
+          autoClose: false,
+        })
       } finally {
         this.isLoading = false
       }
