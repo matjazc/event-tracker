@@ -3,6 +3,7 @@ import { type EventItem } from '@/types/types'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { toast } from 'vue3-toastify'
+import { useAuthStore } from './authStore'
 
 interface State {
   events: EventItem[]
@@ -23,7 +24,6 @@ export const useEventsStore = defineStore('events', {
 
         this.events = response.data
       } catch (error) {
-        console.error(error)
         toast.error('Error fetching events.', {
           position: 'top-center',
           autoClose: 1500,
@@ -33,12 +33,17 @@ export const useEventsStore = defineStore('events', {
       }
     },
     async addEvent(event: EventItem) {
+      const authStore = useAuthStore()
       this.isLoading = true
 
       try {
         const { id, ...rest } = event
 
-        await axios.post<EventItem[]>(`${BASE_URL}${apiRoutes.EVENTS}`, rest)
+        await axios.post<EventItem[]>(`${BASE_URL}${apiRoutes.EVENTS}`, rest, {
+          headers: {
+            Authorization: `Bearer ${authStore.token}`,
+          },
+        })
 
         toast.success('Event successfully created!', {
           position: 'top-center',
@@ -46,11 +51,7 @@ export const useEventsStore = defineStore('events', {
         })
         this.getEvents()
       } catch (error) {
-        console.error(error)
-        toast.error('Failed to create event.', {
-          position: 'top-center',
-          autoClose: 1500,
-        })
+        throw error
       } finally {
         this.isLoading = false
       }
@@ -67,7 +68,6 @@ export const useEventsStore = defineStore('events', {
         })
         this.getEvents()
       } catch (error) {
-        console.error(error)
         toast.error('Failed to delete event.', {
           position: 'top-center',
           autoClose: 1500,
@@ -77,10 +77,15 @@ export const useEventsStore = defineStore('events', {
       }
     },
     async updateEvent(event: EventItem) {
+      const authStore = useAuthStore()
       this.isLoading = true
 
       try {
-        await axios.patch<EventItem[]>(`${BASE_URL}${apiRoutes.EVENTS}/${event.id}`, event)
+        await axios.patch<EventItem[]>(`${BASE_URL}${apiRoutes.EVENTS}/${event.id}`, event, {
+          headers: {
+            Authorization: `Bearer ${authStore.token}`,
+          },
+        })
 
         toast.success('Event successfully edited!', {
           position: 'top-center',
@@ -88,11 +93,7 @@ export const useEventsStore = defineStore('events', {
         })
         this.getEvents()
       } catch (error) {
-        console.error(error)
-        toast.error('Failed to edit event.', {
-          position: 'top-center',
-          autoClose: 1500,
-        })
+        throw error
       } finally {
         this.isLoading = false
       }

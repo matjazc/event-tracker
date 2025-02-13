@@ -3,8 +3,10 @@ import { eventTypesList, priorityList, tableHeaders } from '@/constants/constant
 import { useAuthStore } from '@/store/authStore'
 import { useEventsStore } from '@/store/eventsStore'
 import { EventType, Role, type EventItem } from '@/types/types'
+import type { AxiosError } from 'axios'
 import { storeToRefs } from 'pinia'
 import { onMounted, reactive, ref, watch } from 'vue'
+import { toast } from 'vue3-toastify'
 
 const eventStore = useEventsStore()
 const { events, isLoading } = storeToRefs(eventStore)
@@ -71,13 +73,26 @@ const closeDialogDelete = () => {
   Object.assign(editedEvent, initialEvent)
 }
 
-const saveEvent = () => {
-  if (isNewEvent.value) {
-    addEvent(editedEvent)
-  } else {
-    updateEvent(editedEvent)
+const saveEvent = async () => {
+  const action = isNewEvent.value ? addEvent : updateEvent
+  const errorMessage = isNewEvent.value
+    ? 'Failed to create event. Try again.'
+    : 'Failed to edit event. Try again.'
+
+  try {
+    await action(editedEvent)
+    closeDialog()
+  } catch (err) {
+    const error = err as AxiosError
+    if (error.response?.status === 403) {
+      toast.error(
+        'You don’t have permission to select the ADS type. Please choose a different type and try again.',
+        { position: 'top-center', autoClose: false },
+      )
+    } else {
+      toast.error(errorMessage, { position: 'top-center', autoClose: 1500 })
+    }
   }
-  closeDialog()
 }
 </script>
 
