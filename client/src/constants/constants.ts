@@ -1,7 +1,7 @@
 import { EventType } from '@/types/types'
 
 export const tableHeaders = [
-  { title: 'Id', key: 'id' },
+  { title: 'Id', key: 'eventId' },
   { title: 'Name', key: 'name' },
   { title: 'Type', key: 'type' },
   { title: 'Priority', key: 'priority' },

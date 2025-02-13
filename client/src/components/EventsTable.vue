@@ -3,7 +3,7 @@ import { eventTypesList, priorityList, tableHeaders } from '@/constants/constant
 import { useAuthStore } from '@/store/authStore'
 import { useEventsStore } from '@/store/eventsStore'
 import { EventType, Role, type EventItem } from '@/types/types'
-import type { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
 import { storeToRefs } from 'pinia'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { toast } from 'vue3-toastify'
@@ -20,13 +20,14 @@ const isDialogDelete = ref(false)
 const isNewEvent = ref(false)
 const isNameValid = ref(false)
 
-const nameValidation = [(v: any) => !!v || 'Name is required']
+const validationRules = [(v: any) => !!v || 'This field is required.']
 
 onMounted(() => {
   getEvents()
 })
 
 const initialEvent: EventItem = {
+  eventId: null,
   name: '',
   type: EventType.APP,
   priority: 0,
@@ -87,11 +88,17 @@ const saveEvent = async () => {
     closeDialog()
   } catch (err) {
     const error = err as AxiosError
-    if (error.response?.status === 403) {
+    if (403 === error.response?.status) {
       toast.error(
         'You don’t have permission to select the ADS type. Please choose a different type and try again.',
         { position: 'top-center', autoClose: 4000 },
       )
+    } else if (400 === error.response?.status) {
+      const errorMessage = (error.response.data as { message: string }).message
+      toast.error(errorMessage, { position: 'top-center', autoClose: 4000 })
+    } else if (409 === error.response?.status) {
+      const errorMessage = (error.response.data as { message: string }).message
+      toast.error(errorMessage, { position: 'top-center', autoClose: 4000 })
     } else {
       toast.error(errorMessage, { position: 'top-center', autoClose: 1500 })
     }
@@ -117,9 +124,15 @@ const saveEvent = async () => {
                 <v-container>
                   <v-form ref="form" v-model="isNameValid">
                     <v-text-field
+                      v-model.number="editedEvent.eventId"
+                      label="Id"
+                      :rules="validationRules"
+                      required
+                    ></v-text-field>
+                    <v-text-field
                       v-model="editedEvent.name"
                       label="Name"
-                      :rules="nameValidation"
+                      :rules="validationRules"
                       required
                     ></v-text-field>
                   </v-form>

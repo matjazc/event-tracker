@@ -5,6 +5,7 @@ export enum Role {
 
 export interface EventItem {
   id?: number
+  eventId: number | null
   name: string
   description: string
   type: EventType
