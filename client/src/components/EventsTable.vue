@@ -18,6 +18,9 @@ const { role } = storeToRefs(authStore)
 const isDialog = ref(false)
 const isDialogDelete = ref(false)
 const isNewEvent = ref(false)
+const isNameValid = ref(false)
+
+const nameValidation = [(v: any) => !!v || 'Name is required']
 
 onMounted(() => {
   getEvents()
@@ -87,7 +90,7 @@ const saveEvent = async () => {
     if (error.response?.status === 403) {
       toast.error(
         'You don’t have permission to select the ADS type. Please choose a different type and try again.',
-        { position: 'top-center', autoClose: false },
+        { position: 'top-center', autoClose: 4000 },
       )
     } else {
       toast.error(errorMessage, { position: 'top-center', autoClose: 1500 })
@@ -110,27 +113,25 @@ const saveEvent = async () => {
               <v-card-title>
                 <span class="text-h5">{{ isNewEvent ? 'New Event' : 'Edit Event' }}</span>
               </v-card-title>
-
               <v-card-text>
                 <v-container>
+                  <v-form ref="form" v-model="isNameValid">
+                    <v-text-field
+                      v-model="editedEvent.name"
+                      label="Name"
+                      :rules="nameValidation"
+                      required
+                    ></v-text-field>
+                  </v-form>
                   <v-row>
-                    <v-col cols="12" md="4" sm="6">
-                      <v-text-field v-model="editedEvent.name" label="Name"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4" sm="6">
-                      <v-text-field
-                        v-model="editedEvent.description"
-                        label="Description"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4" sm="6">
+                    <v-col>
                       <v-select
                         v-model="editedEvent.type"
                         label="Type"
                         :items="role === Role.ADMIN ? eventTypesList : eventTypesList.slice(0, -1)"
                       ></v-select>
                     </v-col>
-                    <v-col cols="12" md="4" sm="6">
+                    <v-col>
                       <v-select
                         v-model="editedEvent.priority"
                         label="Priority"
@@ -138,13 +139,22 @@ const saveEvent = async () => {
                       ></v-select>
                     </v-col>
                   </v-row>
+                  <v-textarea v-model="editedEvent.description" label="Description"></v-textarea>
                 </v-container>
               </v-card-text>
 
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue-darken-1" variant="text" @click="closeDialog"> Cancel </v-btn>
-                <v-btn color="blue-darken-1" variant="text" @click="saveEvent"> Save </v-btn>
+                <v-btn
+                  :disabled="!isNameValid"
+                  color="blue-darken-1"
+                  variant="text"
+                  type="submit"
+                  @click="saveEvent"
+                >
+                  Save
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
