@@ -15,6 +15,7 @@ datasource db {
 
 model Event {
   id          Int      @id @default(autoincrement())
+  eventId     Int      @unique
   name        String
   description String
   type        Type
