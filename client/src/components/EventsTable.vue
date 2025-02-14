@@ -114,7 +114,7 @@ const saveEvent = async () => {
           <v-toolbar-title>Events</v-toolbar-title>
           <v-dialog v-model="isDialog" class="dialog" :transition="false">
             <template v-slot:activator>
-              <v-btn class="mb-2" color="primary" @click="addNewEvent()"> Create New Event </v-btn>
+              <v-btn color="primary" @click="addNewEvent()"> Create New Event </v-btn>
             </template>
             <v-card>
               <v-card-title>
