@@ -32,8 +32,13 @@ Create a .env file in the client and services folders and add the necessary envi
 cp .env.example .env
 ```
 
+### Generate Prisma Client
+```bash
+cd services && npx prisma generate
+```
+
 ### Run the Project
-To start both **client** and **services** simultaneously, run from the root:
+To start both **client** and **services** simultaneously, run from the **root**:
 ```bash
 npm run start
 ```
