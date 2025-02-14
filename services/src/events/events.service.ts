@@ -5,8 +5,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { DatabaseService } from 'src/database/database.service';
-import { RolesService } from 'src/roles/roles.service';
+import { DatabaseService } from '../database/database.service';
+import { RolesService } from '../roles/roles.service';
 
 @Injectable()
 export class EventsService {
