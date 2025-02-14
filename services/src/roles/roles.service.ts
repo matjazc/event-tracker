@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import axios from 'axios'; // Ensure axios is properly imported
-import { getIpFromRequest } from 'utils/getIpHelper';
+import axios from 'axios';
+import { getIpFromRequest } from '../utils/getIpHelper';
 
 @Injectable()
 export class RolesService {
