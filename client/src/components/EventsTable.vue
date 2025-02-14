@@ -2,11 +2,13 @@
 import { eventTypesList, priorityList, tableHeaders } from '@/constants/constants'
 import { useAuthStore } from '@/store/authStore'
 import { useEventsStore } from '@/store/eventsStore'
-import { EventType, Role, type EventItem } from '@/types/types'
+import { EventType, type EventItem } from '@/types/types'
 import { AxiosError } from 'axios'
 import { storeToRefs } from 'pinia'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { toast } from 'vue3-toastify'
+import EventDeleteCard from './EventDeleteCard.vue'
+import EventForm from './EventForm.vue'
 
 const eventStore = useEventsStore()
 const { events, isLoading } = storeToRefs(eventStore)
@@ -18,7 +20,6 @@ const { role } = storeToRefs(authStore)
 const isDialog = ref(false)
 const isDialogDelete = ref(false)
 const isNewEvent = ref(false)
-const isFormValid = ref(false)
 
 const validationRules = [(v: any) => !!v || 'This field is required.']
 
@@ -79,7 +80,7 @@ const closeDialogDelete = () => {
 
 const saveEvent = async () => {
   const action = isNewEvent.value ? addEvent : updateEvent
-  const errorMessage = isNewEvent.value
+  const defaultErrorMessage = isNewEvent.value
     ? 'Failed to create event. Try again.'
     : 'Failed to edit event. Try again.'
 
@@ -88,20 +89,32 @@ const saveEvent = async () => {
     closeDialog()
   } catch (err) {
     const error = err as AxiosError
-    if (403 === error.response?.status) {
+    handleApiError(error, defaultErrorMessage)
+  }
+}
+
+const extractErrorMessage = (error: AxiosError): string => {
+  return (error.response?.data as { message: string })?.message ?? 'An unknown error occurred'
+}
+
+const handleApiError = (error: AxiosError, defaultErrorMessage: string) => {
+  const status = error.response?.status
+  const customMessage = extractErrorMessage(error)
+
+  switch (status) {
+    case 403:
       toast.error(
         'You don’t have permission to select the ADS type. Please choose a different type and try again.',
         { position: 'top-center', autoClose: 4000 },
       )
-    } else if (400 === error.response?.status) {
-      const errorMessage = (error.response.data as { message: string }).message
-      toast.error(errorMessage, { position: 'top-center', autoClose: 4000 })
-    } else if (409 === error.response?.status) {
-      const errorMessage = (error.response.data as { message: string }).message
-      toast.error(errorMessage, { position: 'top-center', autoClose: 4000 })
-    } else {
-      toast.error(errorMessage, { position: 'top-center', autoClose: 1500 })
-    }
+      break
+    case 400:
+    case 409:
+      toast.error(customMessage, { position: 'top-center', autoClose: 4000 })
+      break
+    default:
+      toast.error(defaultErrorMessage, { position: 'top-center', autoClose: 1500 })
+      break
   }
 }
 </script>
@@ -116,82 +129,19 @@ const saveEvent = async () => {
             <template v-slot:activator>
               <v-btn color="primary" @click="addNewEvent()"> Create New Event </v-btn>
             </template>
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">{{ isNewEvent ? 'New Event' : 'Edit Event' }}</span>
-              </v-card-title>
-              <v-card-text>
-                <v-form ref="form" v-model="isFormValid">
-                  <v-container>
-                    <v-text-field
-                      v-model.number="editedEvent.eventId"
-                      label="Id"
-                      :rules="validationRules"
-                      required
-                    ></v-text-field>
-                    <v-text-field
-                      v-model="editedEvent.name"
-                      label="Name"
-                      :rules="validationRules"
-                      required
-                    ></v-text-field>
-                    <v-row>
-                      <v-col>
-                        <v-select
-                          v-model="editedEvent.type"
-                          label="Type"
-                          :items="
-                            role === Role.ADMIN ? eventTypesList : eventTypesList.slice(0, -1)
-                          "
-                        ></v-select>
-                      </v-col>
-                      <v-col>
-                        <v-select
-                          v-model="editedEvent.priority"
-                          label="Priority"
-                          :items="priorityList"
-                        ></v-select>
-                      </v-col>
-                    </v-row>
-                    <v-textarea
-                      v-model="editedEvent.description"
-                      label="Description"
-                      :rules="validationRules"
-                      required
-                    ></v-textarea>
-                  </v-container>
-                </v-form>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" variant="text" @click="closeDialog"> Cancel </v-btn>
-                <v-btn
-                  :disabled="!isFormValid"
-                  color="blue-darken-1"
-                  variant="text"
-                  type="submit"
-                  @click="saveEvent"
-                >
-                  Save
-                </v-btn>
-              </v-card-actions>
-            </v-card>
+            <EventForm
+              :isNewEvent="isNewEvent"
+              :editedEvent="editedEvent"
+              :role="role"
+              :validationRules="validationRules"
+              :eventTypesList="eventTypesList"
+              :priorityList="priorityList"
+              @cancel="closeDialog"
+              @save="saveEvent"
+            />
           </v-dialog>
           <v-dialog v-model="isDialogDelete" class="dialog" :transition="false">
-            <v-card>
-              <v-card-title class="text-h5"
-                >Are you sure you want to delete this event?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" variant="text" @click="closeDialogDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue-darken-1" variant="text" @click="removeEventConfirm">OK</v-btn>
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
+            <EventDeleteCard @cancel="closeDialogDelete" @confirm="removeEventConfirm" />
           </v-dialog>
         </v-toolbar>
       </template>
