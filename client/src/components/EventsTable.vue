@@ -18,7 +18,7 @@ const { role } = storeToRefs(authStore)
 const isDialog = ref(false)
 const isDialogDelete = ref(false)
 const isNewEvent = ref(false)
-const isNameValid = ref(false)
+const isFormValid = ref(false)
 
 const validationRules = [(v: any) => !!v || 'This field is required.']
 
@@ -121,8 +121,8 @@ const saveEvent = async () => {
                 <span class="text-h5">{{ isNewEvent ? 'New Event' : 'Edit Event' }}</span>
               </v-card-title>
               <v-card-text>
-                <v-container>
-                  <v-form ref="form" v-model="isNameValid">
+                <v-form ref="form" v-model="isFormValid">
+                  <v-container>
                     <v-text-field
                       v-model.number="editedEvent.eventId"
                       label="Id"
@@ -135,32 +135,39 @@ const saveEvent = async () => {
                       :rules="validationRules"
                       required
                     ></v-text-field>
-                  </v-form>
-                  <v-row>
-                    <v-col>
-                      <v-select
-                        v-model="editedEvent.type"
-                        label="Type"
-                        :items="role === Role.ADMIN ? eventTypesList : eventTypesList.slice(0, -1)"
-                      ></v-select>
-                    </v-col>
-                    <v-col>
-                      <v-select
-                        v-model="editedEvent.priority"
-                        label="Priority"
-                        :items="priorityList"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-textarea v-model="editedEvent.description" label="Description"></v-textarea>
-                </v-container>
+                    <v-row>
+                      <v-col>
+                        <v-select
+                          v-model="editedEvent.type"
+                          label="Type"
+                          :items="
+                            role === Role.ADMIN ? eventTypesList : eventTypesList.slice(0, -1)
+                          "
+                        ></v-select>
+                      </v-col>
+                      <v-col>
+                        <v-select
+                          v-model="editedEvent.priority"
+                          label="Priority"
+                          :items="priorityList"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-textarea
+                      v-model="editedEvent.description"
+                      label="Description"
+                      :rules="validationRules"
+                      required
+                    ></v-textarea>
+                  </v-container>
+                </v-form>
               </v-card-text>
 
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue-darken-1" variant="text" @click="closeDialog"> Cancel </v-btn>
                 <v-btn
-                  :disabled="!isNameValid"
+                  :disabled="!isFormValid"
                   color="blue-darken-1"
                   variant="text"
                   type="submit"
