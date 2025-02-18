@@ -42,6 +42,35 @@ To start both **client** and **services** simultaneously, run from the **root**:
 ```bash
 npm run start
 ```
+## Building and Running app in the Docker Image
+
+### Step 1: Build the Docker Image
+
+Run the following command to build the Docker image:
+
+```
+docker build -t event-tracker-app .
+```
+
+### Step 2: Run the Docker Container
+
+After the image is built, run it using:
+
+```
+docker run -p 80:80 -p 3000:3000 event-tracker-app
+```
+
+### Step 3: Access the Application
+
+Open a browser and navigate to:
+```
+http://localhost
+```
+
+Services API is available at:
+```
+http://localhost/api
+```
 
 ## Testing
 To run unit tests:
